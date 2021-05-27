@@ -1,0 +1,50 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: kuldeep-singh-pipeline-from-scratch-triggertemplate
+spec:
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: kuldeep-singh-pipeline-from-scratch-pipeline-run-
+      spec:
+        serviceAccountName: build-bot
+        pipelineRef:
+          name: kuldeep-singh-pipeline-from-scratch-pipeline
+        workspaces:
+          - name: pipeline-shared-data
+            #persistentVolumeClaim:
+             # claimName: kuldeep-singh-live-pvc
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 1Gi
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: kuldeep-singh-pipeline-from-scratch-pipeline-triggerbinding
+spec:
+  params:
+    - name: namespace
+      value: kuldeep-singh-pipeline-from-scratch
+    - name: gitrepositoryurl
+      value: $(body.repository.url)
+    - name: gitrepositoryname
+      value: $(body.repository.name)
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: akpfs
+spec:
+  serviceAccountName: tekton-triggers-sa
+  triggers:
+    - bindings:
+        - ref: kuldeep-singh-pipeline-from-scratch-pipeline-triggerbinding
+      template:
+        name: kuldeep-singh-pipeline-from-scratch-triggertemplate

@@ -18,7 +18,7 @@ spec:
     - name: clone-repository
       params:
         - name: url
-          value: https://github.com/cloud-native-garage-method-cohort/kuldeeps-rachelc-assignment-repo
+          value: https://github.com/cloud-native-garage-method-cohort/kuldeeps-rachelc-assignment-repo/tree/main/apac-bootcamp-cicd
       taskRef:
         kind: Task
         name: git-clone
